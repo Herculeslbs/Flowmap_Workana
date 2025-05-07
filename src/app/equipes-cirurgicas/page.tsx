@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, Search, Settings, Check, ArrowLeft } from "lucide-react";
+import {
+  Search,
+  ArrowLeft,
+  Check,
+  BellOff,
+  UserPlus,
+  UserMinus,
+  RefreshCw,
+} from "lucide-react";
+import { toast, useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import NotificationButton from "../notification-button/page";
 
 // Tipo para os dados de cada equipe
 interface Equipe {
@@ -31,10 +31,11 @@ interface Equipe {
   membros: number;
   procedimentosRealizados: number;
   ehMembro: boolean;
+  membrosList?: string[]; // Lista com os nomes dos membros da equipe
 }
 
 // Dados fictícios para as equipes
-const equipesIniciais: Equipe[] = [
+const equipes: Equipe[] = [
   {
     id: 1,
     especialidade: "Ortopedia",
@@ -42,167 +43,278 @@ const equipesIniciais: Equipe[] = [
     membros: 4,
     procedimentosRealizados: 32,
     ehMembro: true,
+    membrosList: [
+      "Dr. Marcos Motta",
+      "Dra. Ana Silva",
+      "Dr. Paulo Mendes",
+      "Dr. Roberto Alves",
+    ],
   },
   {
     id: 2,
-    especialidade: "Ortopedia",
+    especialidade: "Cardiologia",
     cirurgiaoPrincipal: "Dr. Marcos Motta",
     membros: 4,
     procedimentosRealizados: 32,
     ehMembro: true,
+    membrosList: [
+      "Dr. Pedro Souza",
+      "Dra. Paula Silva",
+      "Dr. João Mendes",
+      "Dr. Roberta Alves",
+    ],
   },
   {
     id: 3,
     especialidade: "Ortopedia",
-    cirurgiaoPrincipal: "Dr. Marcos Motta",
+    cirurgiaoPrincipal: "Dra. Ana Silva",
     membros: 4,
     procedimentosRealizados: 32,
     ehMembro: true,
+    membrosList: [
+      "Dra. Ana Silva",
+      "Dr. Marcos Motta",
+      "Dr. Paulo Mendes",
+      "Dra. Carla Rodrigues",
+    ],
   },
   {
     id: 4,
-    especialidade: "Ortopedia",
+    especialidade: "Neurologia",
     cirurgiaoPrincipal: "Dr. Marcos Motta",
     membros: 4,
     procedimentosRealizados: 32,
     ehMembro: true,
+    membrosList: [
+      "Dr. Pedro Souza",
+      "Dra. Paula Silva",
+      "Dr. João Mendes",
+      "Dr. Roberta Alves",
+    ],
+  },
+  {
+    id: 5,
+    especialidade: "Cardiologia",
+    cirurgiaoPrincipal: "Dra. Ana Silva",
+    membros: 5,
+    procedimentosRealizados: 28,
+    ehMembro: false,
+    membrosList: [
+      "Dra. Ana Silva",
+      "Dr. Marcos Motta",
+      "Dr. Paulo Mendes",
+      "Dra. Carla Rodrigues",
+      "Dr. Zico Petri",
+    ],
+  },
+  {
+    id: 6,
+    especialidade: "Neurologia",
+    cirurgiaoPrincipal: "Dr. Paulo Mendes",
+    membros: 6,
+    procedimentosRealizados: 15,
+    ehMembro: false,
+    membrosList: [
+      "Dr. Marcos Motta",
+      "Dra. Ana Silva",
+      "Dr. Paulo Mendes",
+      "Dr. Roberto Alves",
+      "Dra. Cintia Carvalho",
+      "Dr. José Alencar",
+    ],
+  },
+  {
+    id: 7,
+    especialidade: "Oftalmologia",
+    cirurgiaoPrincipal: "Dra. Carla Rodrigues",
+    membros: 3,
+    procedimentosRealizados: 42,
+    ehMembro: false,
+    membrosList: [
+      "Dra. Cintia Carvalho",
+      "Dra. Carla Rodrigues",
+      "Dr. John Lennon",
+    ],
+  },
+  {
+    id: 8,
+    especialidade: "Urologia",
+    cirurgiaoPrincipal: "Dr. Roberto Alves",
+    membros: 6,
+    procedimentosRealizados: 19,
+    ehMembro: false,
+    membrosList: [
+      "Dra. Cintia Carvalho",
+      "Dr. José Alencar",
+      "Dr. John Lennon",
+      "Dr. Marcos Motta",
+      "Dr. Paulo Mendes",
+      "Dr. Roberto Alves",
+    ],
   },
 ];
+const solicitarCadastramento = () => {
+  // Mostrar toast de sucesso
+  toast({
+    title: "Solicitação Enviada!",
+    description:
+      "Sua solicitação foi enviada com sucesso. Em breve você receberá a confirmação.",
+  });
+};
 
-// Lista de especialidades disponíveis
-const especialidades = [
-  "Ortopedia",
-  "Cardiologia",
-  "Neurologia",
-  "Cirurgia Geral",
-  "Oftalmologia",
-  "Urologia",
-  "Otorrino",
-  "Cirurgia Plástica",
-  "Obstetrícia",
-];
+export default function BuscarEquipes() {
+  const [filtroEspecialidade, setFiltroEspecialidade] = useState<string>("");
+  const [filtroCirurgiao, setFiltroCirurgiao] = useState<string>("");
+  const [equipesExibidas, setEquipesExibidas] = useState<Equipe[]>(equipes);
+  const [equipeDetalhada, setEquipeDetalhada] = useState<Equipe | null>(null);
 
-// Lista de cirurgiões disponíveis
-const cirurgioes = [
-  "Dr. Marcos Motta",
-  "Dra. Ana Silva",
-  "Dr. Paulo Mendes",
-  "Dra. Carla Rodrigues",
-  "Dr. Roberto Alves",
-  "Dr. José Carlos",
-  "Dra. Márcia Santos",
-  "Dr. Antônio Oliveira",
-  "Dra. Suelen Pereira",
-];
-export default function EquipesCirurgicas() {
-  const [equipes, setEquipes] = useState<Equipe[]>(equipesIniciais)
-  const [modalAberto, setModalAberto] = useState(false)
-  const { toast } = useToast()
+  // Lista de especialidades únicas para o filtro
+  const especialidades = Array.from(
+    new Set(equipes.map((eq) => eq.especialidade))
+  );
 
-  // Estado para a nova equipe
-  const [novaEquipe, setNovaEquipe] = useState<{
-    especialidade: string
-    cirurgiaoPrincipal: string
-    membros: string
-    procedimentosRealizados: string
-  }>({
-    especialidade: "",
-    cirurgiaoPrincipal: "",
-    membros: "",
-    procedimentosRealizados: "",
-  })
+  // Lista de cirurgiões únicos para o filtro
+  const cirurgioes = Array.from(
+    new Set(equipes.map((eq) => eq.cirurgiaoPrincipal))
+  );
 
-  // Abrir modal de nova equipe
-  const abrirModalNovaEquipe = () => {
-    setModalAberto(true)
-  }
+  // Aplicar filtros
+  useEffect(() => {
+    let resultado = equipes;
 
-  // Fechar modal de nova equipe
-  const fecharModalNovaEquipe = () => {
-    setModalAberto(false)
-  }
-
-  // Atualizar campo da nova equipe
-  const atualizarCampoEquipe = (campo: string, valor: string) => {
-    setNovaEquipe({
-      ...novaEquipe,
-      [campo]: valor,
-    })
-  }
-
-  // Salvar nova equipe
-  const salvarNovaEquipe = () => {
-    // Validar campos obrigatórios
-    if (!novaEquipe.especialidade || !novaEquipe.cirurgiaoPrincipal || !novaEquipe.membros) {
-      toast({
-        title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios.",
-        variant: "destructive",
-      })
-      return
+    if (filtroEspecialidade) {
+      resultado = resultado.filter(
+        (eq) => eq.especialidade === filtroEspecialidade
+      );
     }
 
-    // Criar nova equipe
-    const novaEquipeCompleta: Equipe = {
-      id: equipes.length + 1,
-      especialidade: novaEquipe.especialidade,
-      cirurgiaoPrincipal: novaEquipe.cirurgiaoPrincipal,
-      membros: Number.parseInt(novaEquipe.membros),
-      procedimentosRealizados: novaEquipe.procedimentosRealizados
-        ? Number.parseInt(novaEquipe.procedimentosRealizados)
-        : 0,
-      ehMembro: true, // Por padrão, o usuário é membro da equipe que ele cria
+    if (filtroCirurgiao) {
+      resultado = resultado.filter(
+        (eq) => eq.cirurgiaoPrincipal === filtroCirurgiao
+      );
     }
 
-    // Adicionar à lista de equipes
-    setEquipes([...equipes, novaEquipeCompleta])
+    setEquipesExibidas(resultado);
+  }, [filtroEspecialidade, filtroCirurgiao]);
 
-    // Fechar modal
-    fecharModalNovaEquipe()
+  // Limpar filtros
+  const limparFiltros = () => {
+    setFiltroEspecialidade("");
+    setFiltroCirurgiao("");
+    setEquipesExibidas(equipes);
+  };
 
-    // Mostrar toast de sucesso
-    toast({
-      title: "Equipe criada",
-      description: "A nova equipe foi criada com sucesso e você foi adicionado como membro.",
-    })
+  // Exibir detalhes da equipe
+  const exibirDetalhes = (equipe: Equipe) => {
+    setEquipeDetalhada(equipe);
+  };
 
-    // Resetar formulário
-    setNovaEquipe({
-      especialidade: "",
-      cirurgiaoPrincipal: "",
-      membros: "",
-      procedimentosRealizados: "",
-    })
-  }
   return (
     <div className="w-full h-full flex justify-center items-center p-3">
       <Card className="shadow-md">
         <CardHeader className="bg-white border-b pb-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle className="text-2xl font-bold">Minhas Equipes</CardTitle>
-            <Link href="/mapa-cirurgico">
-              <Button className="bg-blue-800 hover:bg-blue-700 text-white">
-                <ArrowLeft className="h-4 w-4" />
-                Voltar para Mapa Cirúrgico
-              </Button>
-            </Link>
+            <CardTitle className="text-2xl font-bold text-gray-900">
+              Equipes Cirúrgicas
+              <NotificationButton />
+            </CardTitle>
+            <div className="flex justify-end">
+              <Link href="/mapa-cirurgico">
+                <Button className="bg-blue-800 hover:bg-blue-700 text-white">
+                  <ArrowLeft className="h-4 w-4" />
+                  Voltar para Mapa Cirúrgico
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-6 bg-white">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-            {equipes
-              .filter((equipe) => equipe.ehMembro)
-              .map((equipe) => (
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-4">Exibir por:</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="col-span-1">
+                <Select
+                  value={filtroEspecialidade}
+                  onValueChange={setFiltroEspecialidade}
+                >
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="Especialidade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {especialidades.map((esp) => (
+                      <SelectItem key={esp} value={esp}>
+                        {esp}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="col-span-1">
+                <Select
+                  value={filtroCirurgiao}
+                  onValueChange={setFiltroCirurgiao}
+                >
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="Cirurgião Principal" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cirurgioes.map((cir) => (
+                      <SelectItem key={cir} value={cir}>
+                        {cir}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button className="bg-blue-800 hover:bg-blue-700 text-white">
+                  <Search className="h-4 w-4 mr-2" />
+                  Buscar
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="bg-white"
+                  onClick={limparFiltros}
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Exibir todas
+                </Button>
+              </div>
+            </div>
+
+            {(filtroEspecialidade || filtroCirurgiao) && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {filtroEspecialidade && (
+                  <div className="bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+                    Especialidade: {filtroEspecialidade}
+                  </div>
+                )}
+                {filtroCirurgiao && (
+                  <div className="bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+                    Cirurgião: {filtroCirurgiao}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {equipesExibidas.length > 0 ? (
+              equipesExibidas.map((equipe) => (
                 <div
                   key={equipe.id}
-                  className="rounded-lg overflow-hidden border border-gray-200 shadow-sm"
+                  className="rounded-lg overflow-hidden border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                  onClick={() => exibirDetalhes(equipe)}
                 >
                   <div className="bg-white py-1 px-4 border-b">
                     <h3 className="text-center font-bold uppercase text-sm">
                       Descrição da Equipe
                     </h3>
                   </div>
-                  <div className=" bg-blue-50 p-4">
+                  <div className="bg-blue-100 p-4">
                     <div className="space-y-2">
                       <div>
                         <span className="font-bold">Especialidade:</span>{" "}
@@ -223,119 +335,128 @@ export default function EquipesCirurgicas() {
                         {equipe.procedimentosRealizados}
                       </div>
                       <div className="flex justify-end">
-                        <div className="flex items-center text-xs">
-                          <div className="bg-green-500 rounded-full p-1 mr-1">
-                            <Check className="h-3 w-3 text-white" />
+                        {equipe.ehMembro ? (
+                          <div className="flex items-center text-xs">
+                            <div className="bg-green-500 rounded-full p-1 mr-1">
+                              <Check className="h-3 w-3 text-white" />
+                            </div>
+                            <span>Você é membro desta equipe!</span>
                           </div>
-                          <span>Você é membro desta equipe!</span>
-                        </div>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs bg-white"
+                          >
+                            <UserPlus className="h-3 w-3 mr-1" />
+                            Solicitar cadastramento
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
-              ))}
+              ))
+            ) : (
+              <div className="col-span-full bg-white p-8 rounded-lg text-center">
+                <p className="text-gray-500">
+                  Nenhuma equipe encontrada com os filtros selecionados.
+                </p>
+                <Button variant="link" onClick={limparFiltros} className="mt-2">
+                  Limpar filtros
+                </Button>
+              </div>
+            )}
           </div>
 
-          <div className="fixed bottom-6 left-0 right-0 flex justify-center gap-4 z-10">
-            <Link href="/buscar-equipes">
-              <Button className="bg-blue-800 hover:bg-blue-700 text-white shadow-md">
-                <Search className="h-4 w-4 mr-2" />
-                <span>Buscar Equipes</span>
-              </Button>
-            </Link>
+          {equipeDetalhada && (
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <h2 className="text-xl font-bold mb-4 text-center">
+                Detalhes da Equipe
+              </h2>
 
-            <Button className="bg-blue-800 hover:bg-blue-700 text-white shadow-md">
-              <Settings className="h-4 w-4 mr-2" />
-              <span>Gerenciar Equipes</span>
-            </Button>
+              <div className="bg-blue-100 p-6 rounded-lg mb-4">
+                <div className="space-y-4">
+                  <div className="text-lg">
+                    <span className="font-bold">Especialidade:</span>{" "}
+                    {equipeDetalhada.especialidade}
+                  </div>
+                  <div className="text-lg">
+                    <span className="font-bold">Cirurgião principal:</span>{" "}
+                    {equipeDetalhada.cirurgiaoPrincipal}
+                  </div>
+                  <div className="text-lg">
+                    <span className="font-bold">Membros:</span>{" "}
+                    {equipeDetalhada.membros.toString().padStart(2, "0")}
+                  </div>
+                  <div className="text-lg">
+                    <span className="font-bold">Procedimentos realizados:</span>{" "}
+                    {equipeDetalhada.procedimentosRealizados}
+                  </div>
+                  {/* Seção de membros da equipe */}
+                  {equipeDetalhada.membrosList &&
+                    equipeDetalhada.membrosList.length > 0 && (
+                      <div className="mt-4">
+                        <div className="font-bold text-lg mb-2">
+                          Membros da Equipe:
+                        </div>
+                        <div className="bg-blue-100 p-3 rounded-md shadow-sm">
+                          <ul className="list-disc pl-5 space-y-1">
+                            {equipeDetalhada.membrosList.map(
+                              (membro, index) => (
+                                <li key={index}>{membro}</li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  <div className="flex justify-end">
+                    {equipeDetalhada.ehMembro && (
+                      <div className="flex items-center">
+                        <div className="bg-green-500 rounded-full p-1 mr-2">
+                          <Check className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="font-medium">
+                          Você é membro desta equipe!
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
 
-            <Button className="bg-blue-800 hover:bg-blue-700 text-white shadow-md" onClick={abrirModalNovaEquipe}>
-              <Plus className="h-4 w-4 mr-2" />
-              <span>Nova Equipe</span>
-            </Button>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {equipeDetalhada.ehMembro ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="flex items-center justify-center gap-2"
+                    >
+                      <UserMinus className="h-4 w-4" />
+                      Sair da equipe
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex items-center justify-center gap-2"
+                    >
+                      <BellOff className="h-4 w-4" />
+                      Silenciar notificações
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    className="bg-blue-800 hover:bg-blue-700 text-white flex items-center justify-center gap-2 col-span-full md:col-span-1"
+                    onClick={solicitarCadastramento}
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Solicitar cadastramento
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
         </CardContent>
-        {/* Modal de Cadastro de Nova Equipe */}
-      <Dialog open={modalAberto} onOpenChange={fecharModalNovaEquipe}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Cadastrar Nova Equipe</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="especialidade">Especialidade</Label>
-              <Select
-                value={novaEquipe.especialidade}
-                onValueChange={(value) => atualizarCampoEquipe("especialidade", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a especialidade" />
-                </SelectTrigger>
-                <SelectContent>
-                  {especialidades.map((esp) => (
-                    <SelectItem key={esp} value={esp}>
-                      {esp}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="cirurgiaoPrincipal">Cirurgião Principal</Label>
-              <Select
-                value={novaEquipe.cirurgiaoPrincipal}
-                onValueChange={(value) => atualizarCampoEquipe("cirurgiaoPrincipal", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o cirurgião principal" />
-                </SelectTrigger>
-                <SelectContent>
-                  {cirurgioes.map((cir) => (
-                    <SelectItem key={cir} value={cir}>
-                      {cir}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="membros">Número de Membros</Label>
-              <Input
-                id="membros"
-                type="number"
-                min="1"
-                max="20"
-                placeholder="Quantidade de membros"
-                value={novaEquipe.membros}
-                onChange={(e) => atualizarCampoEquipe("membros", e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="procedimentosRealizados">Procedimentos Realizados</Label>
-              <Input
-                id="procedimentosRealizados"
-                type="number"
-                min="0"
-                placeholder="Quantidade de procedimentos (opcional)"
-                value={novaEquipe.procedimentosRealizados}
-                onChange={(e) => atualizarCampoEquipe("procedimentosRealizados", e.target.value)}
-              />
-              <p className="text-xs text-gray-500">Deixe em branco para iniciar com zero procedimentos</p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={fecharModalNovaEquipe}>
-              Cancelar
-            </Button>
-            <Button className="bg-blue-800 hover:bg-blue-700 text-white" onClick={salvarNovaEquipe}>
-              Confirmar Cadastro
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
       </Card>
     </div>
   );

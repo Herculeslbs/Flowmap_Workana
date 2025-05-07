@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .hero-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("https://i.ibb.co/hRJ4s26W/home.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.40;
+    mix-blend-mode: overlay;
+    z-index: 0;
+    pointer-events: none;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
