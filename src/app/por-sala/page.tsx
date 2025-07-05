@@ -1,13 +1,12 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import Link from "next/link";
-import { Clock, Info, Check, X, ArrowLeft, Calendar } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import NotificationButton from "../notification-button/page";
+import { useState } from "react"
+import Link from "next/link"
+import { Clock, Info, Check, X, ArrowLeft, Calendar } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
 // Tipos para os dados da tabela
 type Status =
@@ -21,34 +20,34 @@ type Status =
   | "Enfermaria"
   | "Em andamento"
   | "CTI"
-  | "Disponível";
+  | "Disponível"
 
-type Lateralidade = "N/A" | "DIREITO" | "ESQUERDO" | "BILATERAL";
+type Lateralidade = "N/A" | "DIREITO" | "ESQUERDO" | "BILATERAL"
 
 interface Procedimento {
-  status: Status;
-  sala: number;
-  horario: string;
-  paciente: string;
-  idade: number;
-  procedimento: string;
-  lateralidade: Lateralidade;
-  cirurgiao: string;
-  convenio: string;
-  auxiliar?: string;
-  anestesista?: string;
-  instrumentador?: string;
-  circulante?: string;
-  inicio?: string;
-  termino?: string;
-  alergia?: string | null;
-  jejum?: "ADEQUADO" | "INADEQUADO";
-  materiais?: "COMPLETOS" | "INCOMPLETOS";
+  status: Status
+  sala: number
+  horario: string
+  paciente: string
+  idade: number
+  procedimento: string
+  lateralidade: Lateralidade
+  cirurgiao: string
+  convenio: string
+  auxiliar?: string
+  anestesista?: string
+  instrumentador?: string
+  circulante?: string
+  inicio?: string
+  termino?: string
+  alergia?: string | null
+  jejum?: "ADEQUADO" | "INADEQUADO"
+  materiais?: "COMPLETOS" | "INCOMPLETOS"
   timeline?: {
-    hora: string;
-    status: string;
-    concluido: boolean;
-  }[];
+    hora: string
+    status: string
+    concluido: boolean
+  }[]
 }
 
 // Cores para os diferentes status
@@ -64,205 +63,143 @@ const statusColors: Record<Status, string> = {
   "Em andamento": "bg-green-600 text-white",
   CTI: "bg-amber-800 text-white",
   Disponível: "bg-blue-500 text-white",
-};
+}
 
-// Dados fictícios para as salas
+// Dados dos pacientes com status EM ANDAMENTO do mapa cirúrgico
 const procedimentos: Procedimento[] = [
   {
-    status: "ALTA",
-    sala: 1,
-    horario: "07:30",
-    paciente: "José Carlos Otero",
-    idade: 45,
-    procedimento: "CVL",
+    status: "Em andamento",
+    sala: 2,
+    horario: "07:00",
+    paciente: "Luís Carlos Damasceno",
+    idade: 68,
+    procedimento: "Prostatectomia Radical Robótica",
     lateralidade: "N/A",
-    cirurgiao: "DR. ANTONIO",
+    cirurgiao: "Dr. Daniel Tavares",
     convenio: "UNIMED",
-    auxiliar: "Dr. José Prado",
-    anestesista: "Dr. Pedro Filgueiras",
-    instrumentador: "Claudete",
+    auxiliar: "Dr. José Paulo",
+    anestesista: "Dr. Marcos Ribeiro",
+    instrumentador: "Enf. Juliana Alves",
     circulante: "Amanda",
-    inicio: "07:30",
-    termino: "09:00",
-    alergia: "DIPIRONA",
+    inicio: "07:00",
+    termino: "10:00",
+    alergia: "MORFINA",
     jejum: "ADEQUADO",
     materiais: "COMPLETOS",
     timeline: [
-      { hora: "06:02", status: "Internação", concluido: true },
-      { hora: "06:40", status: "APO", concluido: true },
-      { hora: "07:15", status: "Chamado", concluido: true },
-      { hora: "07:50", status: "Em procedimento", concluido: false },
+      { hora: "06:00", status: "Internação", concluido: true },
+      { hora: "06:30", status: "APO", concluido: true },
+      { hora: "07:00", status: "Chamado", concluido: true },
+      { hora: "07:30", status: "Em procedimento", concluido: true },
       { hora: "09:30", status: "Finalização", concluido: false },
       { hora: "10:15", status: "Recuperação", concluido: false },
     ],
   },
   {
-    status: "ALTA",
-    sala: 1,
-    horario: "10:00",
-    paciente: "Luzia Marques",
-    idade: 66,
-    procedimento: "HERNIORRAFIA INGUINAL",
-    lateralidade: "DIREITO",
-    cirurgiao: "DRA. SUELEN",
-    convenio: "BRADESCO",
-    auxiliar: "Dr. José Paulo",
-    anestesista: "Dr. Pedro Figueira",
-    instrumentador: "Claudete",
-    circulante: "Amanda",
-    inicio: "10:00",
-    termino: "11:30",
-    alergia: null,
-    jejum: "ADEQUADO",
-    materiais: "COMPLETOS",
-    timeline: [
-      { hora: "06:15", status: "Internação", concluido: true },
-      { hora: "06:45", status: "APO", concluido: true },
-      { hora: "07:20", status: "Chamado", concluido: false },
-      { hora: "08:00", status: "Em procedimento", concluido: false },
-      { hora: "09:45", status: "Finalização", concluido: false },
-      { hora: "10:30", status: "Recuperação", concluido: false },
-    ],
-  },
-  {
-    status: "Internação",
-    sala: 2,
+    status: "Em andamento",
+    sala: 3,
     horario: "09:00",
-    paciente: "Davi Macedo Junior",
-    idade: 3,
-    procedimento: "COLECISTECTOMIA VIDEOLAP",
+    paciente: "Simone Meirelles Dutra",
+    idade: 37,
+    procedimento: "Colecistectomia Videolaparosc.",
     lateralidade: "N/A",
-    cirurgiao: "DR. RODRIGO",
-    convenio: "SULAMÉRICA",
+    cirurgiao: "Dr. Eduardo Ramos",
+    convenio: "PARTICULAR",
     auxiliar: "Dr. José Paulo",
-    anestesista: "Dr. Pedro Figueira",
-    instrumentador: "Claudete",
+    anestesista: "Dra. Patricia Alves",
+    instrumentador: "Enf. Monica Silva",
     circulante: "Amanda",
     inicio: "09:00",
-    termino: "10:30",
+    termino: "11:00",
     alergia: "PENICILINA",
     jejum: "ADEQUADO",
     materiais: "COMPLETOS",
     timeline: [
-      { hora: "06:30", status: "Internação", concluido: true },
-      { hora: "07:00", status: "APO", concluido: false },
-      { hora: "07:30", status: "Chamado", concluido: false },
-      { hora: "08:15", status: "Em procedimento", concluido: false },
-      { hora: "10:00", status: "Finalização", concluido: false },
-      { hora: "10:45", status: "Recuperação", concluido: false },
-    ],
-  },
-  {
-    status: "Externo",
-    sala: 3,
-    horario: "11:00",
-    paciente: "Maria José da Silva",
-    idade: 67,
-    procedimento: "HISTERECTOMIA VAGINAL",
-    lateralidade: "N/A",
-    cirurgiao: "DRA. MÁRCIA",
-    convenio: "GOLDEN",
-    auxiliar: "Dr. José Paulo",
-    anestesista: "Dr. Pedro Figueira",
-    instrumentador: "Claudete",
-    circulante: "Amanda",
-    inicio: "11:00",
-    termino: "13:00",
-    alergia: null,
-    jejum: "ADEQUADO",
-    materiais: "COMPLETOS",
-    timeline: [
-      { hora: "06:45", status: "Internação", concluido: true },
-      { hora: "07:15", status: "APO", concluido: false },
-      { hora: "07:45", status: "Chamado", concluido: false },
-      { hora: "08:30", status: "Em procedimento", concluido: false },
-      { hora: "10:15", status: "Finalização", concluido: false },
-      { hora: "11:00", status: "Recuperação", concluido: false },
-    ],
-  },
-  {
-    status: "Chamado",
-    sala: 4,
-    horario: "13:00",
-    paciente: "Maria José da Silva",
-    idade: 67,
-    procedimento: "HISTERECTOMIA VAGINAL",
-    lateralidade: "N/A",
-    cirurgiao: "DR. JOSÉ CARLOS",
-    convenio: "FUSEX",
-    auxiliar: "Dr. José Paulo",
-    anestesista: "Dr. Pedro Figueira",
-    instrumentador: "Claudete",
-    circulante: "Amanda",
-    inicio: "13:00",
-    termino: "14:30",
-    alergia: "IBUPROFENO",
-    jejum: "ADEQUADO",
-    materiais: "INCOMPLETOS",
-    timeline: [
-      { hora: "07:00", status: "Internação", concluido: true },
-      { hora: "07:30", status: "APO", concluido: false },
-      { hora: "08:00", status: "Chamado", concluido: false },
-      { hora: "08:45", status: "Em procedimento", concluido: false },
+      { hora: "08:00", status: "Internação", concluido: true },
+      { hora: "08:30", status: "APO", concluido: true },
+      { hora: "09:00", status: "Chamado", concluido: true },
+      { hora: "09:30", status: "Em procedimento", concluido: true },
       { hora: "10:30", status: "Finalização", concluido: false },
       { hora: "11:15", status: "Recuperação", concluido: false },
     ],
   },
   {
-    status: "Suspensa",
-    sala: 5,
-    horario: "08:00",
-    paciente: "Breno da Cunha Machado",
-    idade: 28,
-    procedimento: "FRATURA TÍBIA",
-    lateralidade: "ESQUERDO",
-    cirurgiao: "DR. RODRIGO",
+    status: "Em andamento",
+    sala: 4,
+    horario: "09:30",
+    paciente: "Beatriz Antunes Ferreira",
+    idade: 25,
+    procedimento: "Artroplastia de quadril",
+    lateralidade: "DIREITO",
+    cirurgiao: "Dr. Carlos H. Bittencourt",
     convenio: "UNIMED",
     auxiliar: "Dr. José Paulo",
-    anestesista: "Dr. Pedro Figueira",
-    instrumentador: "Claudete",
+    anestesista: "Dra. Juliana Mendes",
+    instrumentador: "Enf. Fernanda Silva",
     circulante: "Amanda",
-    inicio: "08:00",
-    termino: "09:30",
-    alergia: null,
-    jejum: "INADEQUADO",
-    materiais: "COMPLETOS",
-    timeline: [
-      { hora: "07:15", status: "Internação", concluido: false },
-      { hora: "07:45", status: "APO", concluido: false },
-      { hora: "08:15", status: "Chamado", concluido: false },
-      { hora: "09:00", status: "Em procedimento", concluido: false },
-      { hora: "10:45", status: "Finalização", concluido: false },
-      { hora: "11:30", status: "Recuperação", concluido: false },
-    ],
-  },
-  {
-    status: "SRPA",
-    sala: 6,
-    horario: "14:00",
-    paciente: "Breno da Cunha Machado",
-    idade: 28,
-    procedimento: "HERNIORRAFIA INGUINAL",
-    lateralidade: "DIREITO",
-    cirurgiao: "DRA. MARISA",
-    convenio: "BRADESCO",
-    auxiliar: "Dr. José Paulo",
-    anestesista: "Dr. Pedro Figueira",
-    instrumentador: "Claudete",
-    circulante: "Amanda",
-    inicio: "14:00",
-    termino: "15:30",
-    alergia: "DIPIRONA",
+    inicio: "09:30",
+    termino: "13:00",
+    alergia: "LÁTEX, IODO",
     jejum: "ADEQUADO",
     materiais: "COMPLETOS",
     timeline: [
-      { hora: "07:30", status: "Internação", concluido: false },
-      { hora: "08:00", status: "APO", concluido: false },
-      { hora: "08:30", status: "Chamado", concluido: false },
-      { hora: "09:15", status: "Em procedimento", concluido: false },
-      { hora: "11:00", status: "Finalização", concluido: false },
-      { hora: "11:45", status: "Recuperação", concluido: false },
+      { hora: "08:30", status: "Internação", concluido: true },
+      { hora: "09:00", status: "APO", concluido: true },
+      { hora: "09:30", status: "Chamado", concluido: true },
+      { hora: "10:00", status: "Em procedimento", concluido: true },
+      { hora: "12:30", status: "Finalização", concluido: false },
+      { hora: "13:15", status: "Recuperação", concluido: false },
     ],
+  },
+  {
+    status: "Em andamento",
+    sala: 5,
+    horario: "07:45",
+    paciente: "Bruno César Machado",
+    idade: 22,
+    procedimento: "Orquiectomia",
+    lateralidade: "ESQUERDO",
+    cirurgiao: "Dr. Henrique de Sá",
+    convenio: "SULAMÉRICA",
+    auxiliar: "Dr. José Paulo",
+    anestesista: "Dr. Rafael Costa",
+    instrumentador: "Enf. Tatiana Lima",
+    circulante: "Amanda",
+    inicio: "07:45",
+    termino: "09:30",
+    alergia: null,
+    jejum: "ADEQUADO",
+    materiais: "COMPLETOS",
+    timeline: [
+      { hora: "07:00", status: "Internação", concluido: true },
+      { hora: "07:15", status: "APO", concluido: true },
+      { hora: "07:45", status: "Chamado", concluido: true },
+      { hora: "08:15", status: "Em procedimento", concluido: true },
+      { hora: "09:00", status: "Finalização", concluido: false },
+      { hora: "09:45", status: "Recuperação", concluido: false },
+    ],
+  },
+  {
+    status: "Disponível",
+    sala: 1,
+    horario: "",
+    paciente: "",
+    idade: 0,
+    procedimento: "",
+    lateralidade: "N/A",
+    cirurgiao: "",
+    convenio: "",
+  },
+  {
+    status: "Disponível",
+    sala: 6,
+    horario: "",
+    paciente: "",
+    idade: 0,
+    procedimento: "",
+    lateralidade: "N/A",
+    cirurgiao: "",
+    convenio: "",
   },
   {
     status: "Disponível",
@@ -276,32 +213,15 @@ const procedimentos: Procedimento[] = [
     convenio: "",
   },
   {
-    status: "Em andamento",
+    status: "Disponível",
     sala: 8,
-    horario: "08:30",
-    paciente: "Justino Cardoso Lima",
-    idade: 72,
-    procedimento: "FACO",
-    lateralidade: "DIREITO",
-    cirurgiao: "DR. LUCIANO",
-    convenio: "PARTICULAR",
-    auxiliar: "Dr. José Paulo",
-    anestesista: "Dr. Pedro Figueira",
-    instrumentador: "Claudete",
-    circulante: "Amanda",
-    inicio: "08:30",
-    termino: "10:00",
-    alergia: null,
-    jejum: "ADEQUADO",
-    materiais: "COMPLETOS",
-    timeline: [
-      { hora: "07:45", status: "Internação", concluido: false },
-      { hora: "08:15", status: "APO", concluido: false },
-      { hora: "08:45", status: "Chamado", concluido: false },
-      { hora: "09:30", status: "Em procedimento", concluido: false },
-      { hora: "11:15", status: "Finalização", concluido: false },
-      { hora: "12:00", status: "Recuperação", concluido: false },
-    ],
+    horario: "",
+    paciente: "",
+    idade: 0,
+    procedimento: "",
+    lateralidade: "N/A",
+    cirurgiao: "",
+    convenio: "",
   },
   {
     status: "Disponível",
@@ -314,30 +234,27 @@ const procedimentos: Procedimento[] = [
     cirurgiao: "",
     convenio: "",
   },
-];
+]
 
-export default function MapaPorSala() {
-  const [salaAberta, setSalaAberta] = useState<number | null>(null);
+export default function PorSala() {
+  const [salaAberta, setSalaAberta] = useState<number | null>(null)
 
   const abrirDetalhesSala = (sala: number) => {
-    setSalaAberta(sala);
-  };
+    setSalaAberta(sala)
+  }
 
   const fecharDetalhesSala = () => {
-    setSalaAberta(null);
-  };
+    setSalaAberta(null)
+  }
 
-  const dadosSalaAtual = procedimentos.find((sala) => sala.sala === salaAberta);
+  const dadosSalaAtual = procedimentos.find((sala) => sala.sala === salaAberta)
 
   return (
     <div className="w-full h-full flex justify-center items-center p-3">
       <Card className="shadow-md">
         <CardHeader className="bg-white border-b pb-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle className="text-2xl font-bold">
-              Mapa Cirúrgico em Tempo Real
-              <NotificationButton />
-            </CardTitle>
+            <CardTitle className="text-2xl font-bold">Mapa Cirúrgico em Tempo Real</CardTitle>
             <Link href="/mapa-cirurgico">
               <Button className="bg-blue-800 hover:bg-blue-700 text-white">
                 <ArrowLeft className="h-4 w-4" />
@@ -355,78 +272,54 @@ export default function MapaPorSala() {
                 onClick={() => abrirDetalhesSala(proc.sala)}
               >
                 <div className="border-b bg-gray-50 py-2 px-4">
-                  <h2 className="text-center font-bold">
-                    SALA {String(proc.sala).padStart(2, "0")}
-                  </h2>
+                  <h2 className="text-center font-bold">SALA {String(proc.sala).padStart(2, "0")}</h2>
                 </div>
-
                 {proc.status === "Disponível" ? (
                   <div className="p-4 bg-blue-100 flex flex-col items-center justify-center min-h-[200px]">
-                    <Badge
-                      className={`${
-                        statusColors[proc.status]
-                      } font-normal mb-4 px-4 py-1 text-lg`}
-                    >
+                    <Badge className={`${statusColors[proc.status]} font-normal mb-4 px-4 py-1 text-lg`}>
                       {proc.status}
                     </Badge>
                     <Calendar className="h-16 w-16 text-blue-500 mb-4" />
-                    <p className="text-center font-medium">
-                      Sala disponível para agendamento
-                    </p>
-                    <Button className="mt-4 bg-blue-600 hover:bg-blue-700">
-                      Agendar Procedimento
-                    </Button>
+                    <p className="text-center font-medium">Sala disponível para agendamento</p>
+                    <Button className="mt-4 bg-blue-600 hover:bg-blue-700">Agendar Procedimento</Button>
                   </div>
                 ) : (
                   <div className="p-4 bg-blue-50">
                     <div className="mb-3">
                       <div className="font-semibold text-center">
-                        {proc.paciente}{" "}
-                        <span className="text-sm">{proc.idade}</span>
+                        {proc.paciente} <span className="text-sm">{proc.idade}</span>
                       </div>
                       <div className="text-sm text-center font-medium flex items-center justify-center">
                         {proc.procedimento}
-                        {proc.lateralidade !== "N/A" &&
-                          ` - ${proc.lateralidade}`}
+                        {proc.lateralidade !== "N/A" && ` - ${proc.lateralidade}`}
                         <Info className="ml-1 h-4 w-4 text-blue-600" />
                       </div>
                     </div>
-
                     <div className="text-xs space-y-1 mb-3">
                       <div>
-                        <span className="font-semibold">Cirurgião:</span>{" "}
-                        {proc.cirurgiao}
+                        <span className="font-semibold">Cirurgião:</span> {proc.cirurgiao}
                       </div>
                       {proc.auxiliar && (
                         <div>
-                          <span className="font-semibold">Auxiliar:</span>{" "}
-                          {proc.auxiliar}
+                          <span className="font-semibold">Auxiliar:</span> {proc.auxiliar}
                         </div>
                       )}
                       {proc.anestesista && (
                         <div>
-                          <span className="font-semibold">Anestesista:</span>{" "}
-                          {proc.anestesista}
+                          <span className="font-semibold">Anestesista:</span> {proc.anestesista}
                         </div>
                       )}
                       <div>
-                        <span className="font-semibold">Convênio:</span>{" "}
-                        {proc.convenio}
+                        <span className="font-semibold">Convênio:</span> {proc.convenio}
                       </div>
                       <div>
                         <span className="font-semibold">Status:</span>{" "}
-                        <Badge
-                          className={`${statusColors[proc.status]} font-normal`}
-                        >
-                          {proc.status}
-                        </Badge>
+                        <Badge className={`${statusColors[proc.status]} font-normal`}>{proc.status}</Badge>
                       </div>
                     </div>
-
                     <div className="flex justify-between items-center text-xs">
                       <div className="flex items-center">
-                        <span className="font-semibold mr-1">HORÁRIO:</span>{" "}
-                        {proc.horario}
+                        <span className="font-semibold mr-1">HORÁRIO:</span> {proc.horario}
                       </div>
                       {proc.termino && (
                         <div className="flex items-center">
@@ -449,62 +342,46 @@ export default function MapaPorSala() {
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center">
                     <Clock className="h-6 w-6 mr-2" />
-                    <span className="text-xl font-bold">
-                      {dadosSalaAtual?.termino}
-                    </span>
+                    <span className="text-xl font-bold">{dadosSalaAtual?.termino}</span>
                   </div>
-
                   <div className="text-center">
                     <h2 className="text-xl font-bold">CIRURGIA SEGURA</h2>
                   </div>
-
                   <div className="bg-black text-white px-3 py-1 rounded-full">
                     <span className="text-lg">{dadosSalaAtual?.inicio}</span>
                   </div>
                 </div>
-
                 <div className="text-center mb-6">
                   <h1 className="text-3xl font-bold">
-                    {dadosSalaAtual?.paciente}{" "}
-                    <span className="text-xl">{dadosSalaAtual?.idade}</span>
+                    {dadosSalaAtual?.paciente} <span className="text-xl">{dadosSalaAtual?.idade}</span>
                   </h1>
-
                   <div className="bg-blue-200 inline-block px-4 py-1 rounded-md mt-2">
                     <span className="font-medium">
                       {dadosSalaAtual?.procedimento}
-                      {dadosSalaAtual?.lateralidade !== "N/A" &&
-                        ` - ${dadosSalaAtual?.lateralidade}`}
+                      {dadosSalaAtual?.lateralidade !== "N/A" && ` - ${dadosSalaAtual?.lateralidade}`}
                     </span>
                     <span className="ml-2 bg-purple-500 text-white rounded-full w-6 h-6 inline-flex items-center justify-center">
                       E
                     </span>
                   </div>
                 </div>
-
                 <div className="flex flex-wrap justify-between text-sm mb-6">
                   <div>
-                    <span className="font-semibold">Cirurgião:</span>{" "}
-                    {dadosSalaAtual?.cirurgiao}
+                    <span className="font-semibold">Cirurgião:</span> {dadosSalaAtual?.cirurgiao}
                   </div>
                   <div>
-                    <span className="font-semibold">Auxiliar:</span>{" "}
-                    {dadosSalaAtual?.auxiliar}
+                    <span className="font-semibold">Auxiliar:</span> {dadosSalaAtual?.auxiliar}
                   </div>
                   <div>
-                    <span className="font-semibold">Anestesista:</span>{" "}
-                    {dadosSalaAtual?.anestesista}
+                    <span className="font-semibold">Anestesista:</span> {dadosSalaAtual?.anestesista}
                   </div>
                   <div>
-                    <span className="font-semibold">Circulante:</span>{" "}
-                    {dadosSalaAtual?.circulante}
+                    <span className="font-semibold">Circulante:</span> {dadosSalaAtual?.circulante}
                   </div>
                 </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                   <div
-                    className={`p-4 rounded-md text-center ${
-                      dadosSalaAtual?.alergia ? "bg-red-100" : "bg-green-100"
-                    }`}
+                    className={`p-4 rounded-md text-center ${dadosSalaAtual?.alergia ? "bg-red-100" : "bg-green-100"}`}
                   >
                     <div className="text-red-500 font-semibold">ALERGIA</div>
                     <div className="mt-2">
@@ -513,9 +390,7 @@ export default function MapaPorSala() {
                           <div className="bg-red-500 text-white rounded-md p-2 mb-2">
                             <Check className="h-6 w-6" />
                           </div>
-                          <span className="font-bold">
-                            {dadosSalaAtual.alergia}
-                          </span>
+                          <span className="font-bold">{dadosSalaAtual.alergia}</span>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center">
@@ -527,12 +402,9 @@ export default function MapaPorSala() {
                       )}
                     </div>
                   </div>
-
                   <div
                     className={`p-4 rounded-md text-center ${
-                      dadosSalaAtual?.jejum === "ADEQUADO"
-                        ? "bg-blue-100"
-                        : "bg-red-100"
+                      dadosSalaAtual?.jejum === "ADEQUADO" ? "bg-blue-100" : "bg-red-100"
                     }`}
                   >
                     <div className="text-blue-500 font-semibold">JEJUM</div>
@@ -540,65 +412,48 @@ export default function MapaPorSala() {
                       <div className="flex flex-col items-center">
                         <div
                           className={`${
-                            dadosSalaAtual?.jejum === "ADEQUADO"
-                              ? "bg-blue-500"
-                              : "bg-red-500"
+                            dadosSalaAtual?.jejum === "ADEQUADO" ? "bg-blue-500" : "bg-red-500"
                           } text-white rounded-md p-2 mb-2`}
                         >
                           <Check className="h-6 w-6" />
                         </div>
-                        <span className="font-bold">
-                          {dadosSalaAtual?.jejum}
-                        </span>
+                        <span className="font-bold">{dadosSalaAtual?.jejum}</span>
                       </div>
                     </div>
                   </div>
-
                   <div
                     className={`p-4 rounded-md text-center ${
-                      dadosSalaAtual?.materiais === "COMPLETOS"
-                        ? "bg-green-100"
-                        : "bg-red-100"
+                      dadosSalaAtual?.materiais === "COMPLETOS" ? "bg-green-100" : "bg-red-100"
                     }`}
                   >
-                    <div className="text-green-500 font-semibold">
-                      MATERIAIS
-                    </div>
+                    <div className="text-green-500 font-semibold">MATERIAIS</div>
                     <div className="mt-2">
                       <div className="flex flex-col items-center">
                         <div
                           className={`${
-                            dadosSalaAtual?.materiais === "COMPLETOS"
-                              ? "bg-green-500"
-                              : "bg-red-500"
+                            dadosSalaAtual?.materiais === "COMPLETOS" ? "bg-green-500" : "bg-red-500"
                           } text-white rounded-md p-2 mb-2`}
                         >
                           <Check className="h-6 w-6" />
                         </div>
-                        <span className="font-bold">
-                          {dadosSalaAtual?.materiais}
-                        </span>
+                        <span className="font-bold">{dadosSalaAtual?.materiais}</span>
                       </div>
                     </div>
                   </div>
                 </div>
-
                 {dadosSalaAtual?.timeline && (
                   <div className="mb-4">
                     <div className="relative">
                       <div className="flex justify-between mb-2">
                         {dadosSalaAtual.timeline.map((item, index) => (
                           <div key={index} className="text-center">
-                            <div className="text-xs font-medium">
-                              {item.hora}
-                            </div>
+                            <div className="text-xs font-medium">{item.hora}</div>
                           </div>
                         ))}
                       </div>
-
                       <div className="h-1 bg-gray-300 relative">
                         {dadosSalaAtual.timeline.map((item, index, arr) => {
-                          const percentagem = (index / (arr.length - 1)) * 100;
+                          const percentagem = (index / (arr.length - 1)) * 100
                           return (
                             <div
                               key={index}
@@ -606,19 +461,16 @@ export default function MapaPorSala() {
                                 item.concluido
                                   ? "bg-green-500"
                                   : index === arr.findIndex((i) => !i.concluido)
-                                  ? "bg-green-300"
-                                  : "bg-orange-400"
+                                    ? "bg-green-300"
+                                    : "bg-orange-400"
                               }`}
                               style={{ left: `${percentagem}%` }}
                             >
-                              {item.concluido && (
-                                <Check className="h-4 w-4 text-white" />
-                              )}
+                              {item.concluido && <Check className="h-4 w-4 text-white" />}
                             </div>
-                          );
+                          )
                         })}
                       </div>
-
                       <div className="flex justify-between mt-2">
                         {dadosSalaAtual.timeline.map((item, index) => (
                           <div key={index} className="text-center">
@@ -629,12 +481,9 @@ export default function MapaPorSala() {
                     </div>
                   </div>
                 )}
-
                 <div className="flex justify-end">
                   <div className="bg-blue-200 px-4 py-1 rounded-md">
-                    <span className="font-medium">
-                      Convênio: {dadosSalaAtual?.convenio}
-                    </span>
+                    <span className="font-medium">Convênio: {dadosSalaAtual?.convenio}</span>
                   </div>
                 </div>
               </div>
@@ -643,17 +492,13 @@ export default function MapaPorSala() {
                 <Calendar className="h-24 w-24 text-blue-500 mb-6" />
                 <h2 className="text-2xl font-bold mb-4">Sala Disponível</h2>
                 <p className="text-center mb-6">
-                  Esta sala está disponível para agendamento de procedimentos
-                  cirúrgicos.
+                  Esta sala está disponível para agendamento de procedimentos cirúrgicos.
                 </p>
                 <Link href="/agendar-procedimentos">
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    Agendar Procedimento
-                  </Button>
+                  <Button className="bg-blue-600 hover:bg-blue-700">Agendar Procedimento</Button>
                 </Link>
               </div>
             )}
-
             <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
               <X className="h-4 w-4" />
               <span className="sr-only">Fechar</span>
@@ -662,5 +507,5 @@ export default function MapaPorSala() {
         </Dialog>
       </Card>
     </div>
-  );
+  )
 }

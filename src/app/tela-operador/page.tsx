@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { LogOut, ClipboardList, Users, Calendar } from "lucide-react"
+import { LogOut, ClipboardList, Users, Calendar, Map } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Tooltip, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
 
 export default function TelaOperador() {
@@ -14,7 +14,7 @@ export default function TelaOperador() {
   const [showTooltip, setShowTooltip] = useState(false)
 
   // Número de solicitações pendentes
-  const numSolicitacoes = 13
+  const numSolicitacoes = 8
 
   // Função para fazer logout
   const handleLogout = () => {
@@ -34,7 +34,12 @@ export default function TelaOperador() {
 
   // Função para navegar para a tela de gerenciamento de equipes
   const irParaGerenciamentoEquipes = () => {
-    router.push("/equipes-cirurgicas")
+    router.push("/equipescirurgicas-operador")
+  }
+
+  // Função para navegar para o mapa do dia
+  const irParaMapaDoDia = () => {
+    router.push("/mapa-cirurgico")
   }
 
   return (
@@ -44,6 +49,10 @@ export default function TelaOperador() {
         <h1 className="text-lg md:text-xl font-medium">Acesso de operador</h1>
         <div className="flex items-center gap-4">
           <span className="text-sm md:text-base">Enfermeiro(a) Luciano</span>
+          <Button variant="ghost" size="sm" onClick={irParaMapaDoDia} className="text-white hover:bg-blue-700">
+            <Map className="h-4 w-4 mr-1" />
+            <span className="hidden sm:inline">Mapa do Dia</span>
+          </Button>
           <Button variant="ghost" size="sm" onClick={handleLogout} className="text-white hover:bg-blue-700">
             <LogOut className="h-4 w-4 mr-1" />
             <span className="hidden sm:inline">Sair</span>
@@ -55,10 +64,6 @@ export default function TelaOperador() {
       <main className="flex-1 p-6 md:p-10 flex flex-col justify-center">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {/* Card Analisar Solicitações */}
-          <TooltipProvider>
-            <div className="relative">
-              <Tooltip open={showTooltip}>
-                <TooltipTrigger asChild>
                   <Card
                     className="bg-[#1E40AF] hover:bg-blue-700 transition-colors border-2 border-blue-900 h-48 flex flex-col items-center justify-center cursor-pointer relative shadow-md"
                     onClick={irParaAnaliseSolicitacoes}
@@ -69,16 +74,8 @@ export default function TelaOperador() {
                       {numSolicitacoes}
                     </div>
                     <ClipboardList className="h-12 w-12 mb-3 text-white" />
-                    <h2 className="text-xl font-bold text-center text-white">
-                      Analisar
-                      <br />
-                      Solicitações
-                    </h2>
+                    <h2 className="text-xl font-bold text-center text-white">Solicitações</h2>
                   </Card>
-                </TooltipTrigger>
-              </Tooltip>
-            </div>
-          </TooltipProvider>
 
           {/* Card Gerenciar Mapeamento Cirúrgico */}
           <Card
@@ -86,11 +83,7 @@ export default function TelaOperador() {
             onClick={irParaGerenciamentoMapa}
           >
             <Calendar className="h-12 w-12 mb-3 text-white" />
-            <h2 className="text-xl font-bold text-center text-white">
-              Gerenciar
-              <br />
-              Mapeamento Cirúrgico
-            </h2>
+            <h2 className="text-xl font-bold text-center text-white">Gerenciar Mapa Cirúrgico</h2>
           </Card>
 
           {/* Card Gerenciar Equipes Cirúrgicas */}
@@ -99,11 +92,7 @@ export default function TelaOperador() {
             onClick={irParaGerenciamentoEquipes}
           >
             <Users className="h-12 w-12 mb-3 text-white" />
-            <h2 className="text-xl font-bold text-center text-white">
-              Gerenciar
-              <br />
-              Equipes Cirúrgicas
-            </h2>
+            <h2 className="text-xl font-bold text-center text-white">Equipes Cirúrgicas</h2>
           </Card>
         </div>
       </main>

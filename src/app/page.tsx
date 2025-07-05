@@ -1,5 +1,6 @@
 import About from "./home/page";
 
+
 export default function Home() {
   return (
     <>
@@ -7,3 +8,5 @@ export default function Home() {
     </>
   );
 }
+
+
