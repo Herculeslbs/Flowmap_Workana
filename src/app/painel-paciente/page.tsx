@@ -66,7 +66,7 @@ interface ContatoFamiliar {
   receberNotificacoes: boolean
 }
 
-export default function PainelPaciente({ }: { pacienteId: string }) {
+export default function PainelPaciente({ }: {  }) {
   const router = useRouter()
   const { toast } = useToast()
 
