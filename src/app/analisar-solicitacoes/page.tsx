@@ -14,7 +14,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format, addDays, subDays } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import GlobalHeader from "@/app/global-header/page"
+import GlobalHeader from "@/components/ui/global-header"
 
 type SectionType = "agendamentos" | "inclusao-exclusao" | "outro" | null
 

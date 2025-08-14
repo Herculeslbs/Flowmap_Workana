@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
-import GlobalHeader from "@/app/global-header/page"
+import GlobalHeader from "@/components/ui/global-header"
 
 export default function TelaOperador() {
   const router = useRouter()

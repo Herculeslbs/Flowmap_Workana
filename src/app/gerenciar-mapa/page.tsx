@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { LogOut, Map, CalendarDays } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import GlobalHeader from "@/app/global-header/page"
+import GlobalHeader from "@/components/ui/global-header"
 
 export default function GerenciarMapa() {
   const router = useRouter()

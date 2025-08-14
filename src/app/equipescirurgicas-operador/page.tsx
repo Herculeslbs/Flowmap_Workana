@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
-import GlobalHeader from "@/app/global-header/page"
+import GlobalHeader from "@/components/ui/global-header"
 
 // Tipo para os dados de cada equipe
 interface Equipe {
