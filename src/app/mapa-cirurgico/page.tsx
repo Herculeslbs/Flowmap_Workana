@@ -355,7 +355,7 @@ export default function MapaCirurgico() {
   // Função para fazer logout
   const handleLogout = () => {
     // Aqui seria implementada a lógica de logout (limpar tokens, etc)
-    router.push("/login")
+    router.push("/home")
   }
 
   const toggleRowExpansion = (index: number) => {
@@ -647,7 +647,7 @@ export default function MapaCirurgico() {
                       {visibleColumns.includes("paciente") && (
                         <td className="py-3 px-4">
                           <Link
-                            href={`/painel-paciente`}
+                            href={`/painel-paciente1`}
                             className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
                           >
                             {proc.paciente}

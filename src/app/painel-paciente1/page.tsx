@@ -132,6 +132,7 @@ const pacientesData: Record<string, PacienteCompleto> = {
         usuario: "Tec. Pedro Pedroso",
         timestamp: "2025-01-04T10:45:00Z",
       },
+      
     ],
     historico: [
       {
@@ -580,7 +581,7 @@ export default function PainelPaciente() {
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-4">
-              <Link href="/mapa-do-dia">
+              <Link href="/mapa-cirurgico">
                 <Button variant="outline" size="sm" className="flex items-center gap-2 bg-transparent">
                   <ArrowLeft className="h-4 w-4" />
                   Voltar

@@ -2,11 +2,13 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { LogOut, ChevronDown, Search, Filter, AlertCircle, ArrowLeft } from "lucide-react"
+import { LogOut, ChevronDown, Search, Filter, AlertCircle, ArrowLeft, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { format, addDays, subDays } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
@@ -115,6 +117,7 @@ export default function MapasPreliminares() {
   const [searchTerm, setSearchTerm] = useState("")
   const [sortField, setSortField] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
 
   const formattedDate = format(currentDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
 
@@ -134,8 +137,11 @@ export default function MapasPreliminares() {
     setCurrentDate((prev) => addDays(prev, 1))
   }
 
-  const handleToday = () => {
-    setCurrentDate(new Date())
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setCurrentDate(date)
+      setIsCalendarOpen(false)
+    }
   }
 
   const procedimentosFiltrados = futureProcedures
@@ -249,9 +255,23 @@ export default function MapasPreliminares() {
                   <Button variant="outline" onClick={handlePreviousDay}>
                     Anterior
                   </Button>
-                  <Button variant="outline" onClick={handleToday}>
-                    Hoje
-                  </Button>
+                  <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="flex items-center gap-2 bg-transparent">
+                        <Calendar className="h-4 w-4" />
+                        {format(currentDate, "dd/MM/yyyy")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={currentDate}
+                        onSelect={handleDateSelect}
+                        locale={ptBR}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <Button variant="outline" onClick={handleNextDay}>
                     Próximo
                   </Button>

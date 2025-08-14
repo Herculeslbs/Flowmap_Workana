@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Clock, Info, Check, X, ArrowLeft, Calendar } from "lucide-react"
+import { Clock, Info, Check, X, ArrowLeft, Calendar, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -69,7 +69,7 @@ const statusColors: Record<Status, string> = {
 const procedimentos: Procedimento[] = [
   {
     status: "Em andamento",
-    sala: 2,
+    sala: 1,
     horario: "07:00",
     paciente: "Luís Carlos Damasceno",
     idade: 68,
@@ -97,7 +97,7 @@ const procedimentos: Procedimento[] = [
   },
   {
     status: "Em andamento",
-    sala: 3,
+    sala: 2,
     horario: "09:00",
     paciente: "Simone Meirelles Dutra",
     idade: 37,
@@ -125,7 +125,7 @@ const procedimentos: Procedimento[] = [
   },
   {
     status: "Em andamento",
-    sala: 4,
+    sala: 3,
     horario: "09:30",
     paciente: "Beatriz Antunes Ferreira",
     idade: 25,
@@ -153,7 +153,7 @@ const procedimentos: Procedimento[] = [
   },
   {
     status: "Em andamento",
-    sala: 5,
+    sala: 4,
     horario: "07:45",
     paciente: "Bruno César Machado",
     idade: 22,
@@ -181,7 +181,7 @@ const procedimentos: Procedimento[] = [
   },
   {
     status: "Disponível",
-    sala: 1,
+    sala: 5,
     horario: "",
     paciente: "",
     idade: 0,
@@ -248,6 +248,140 @@ export default function PorSala() {
   }
 
   const dadosSalaAtual = procedimentos.find((sala) => sala.sala === salaAberta)
+
+  const handleEspelharTela = () => {
+    const novaJanela = window.open("", "_blank", "width=800,height=600")
+    if (novaJanela && dadosSalaAtual) {
+      novaJanela.document.write(`
+        <html>
+          <head>
+            <title>Cirurgia Segura - Espelhamento</title>
+            <style>
+              body { 
+                font-family: Arial, sans-serif; 
+                margin: 0; 
+                padding: 20px; 
+                background: linear-gradient(to right, #dbeafe, #bfdbfe);
+              }
+              .container { max-width: 700px; margin: 0 auto; }
+              .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+              .title { font-size: 24px; font-weight: bold; text-align: center; }
+              .patient-name { font-size: 32px; font-weight: bold; text-align: center; margin: 20px 0; }
+              .procedure { background: #bfdbfe; padding: 10px 20px; border-radius: 8px; text-align: center; margin: 20px 0; position: relative; }
+              .procedure-badge { background: #8b5cf6; color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; margin-left: 8px; }
+              .team-info { display: flex; flex-wrap: wrap; justify-content: space-between; margin: 20px 0; font-size: 14px; }
+              .safety-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 30px 0; }
+              .safety-item { padding: 20px; border-radius: 8px; text-align: center; }
+              .safety-icon { width: 24px; height: 24px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+              .timeline { margin: 20px 0; }
+              .timeline-container { position: relative; margin: 20px 0; }
+              .timeline-times { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; font-weight: 500; }
+              .timeline-bar { height: 4px; background: #d1d5db; position: relative; margin: 10px 0; }
+              .timeline-point { width: 24px; height: 24px; border-radius: 50%; position: absolute; top: -10px; display: flex; align-items: center; justify-content: center; }
+              .timeline-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; }
+              .convenio-box { text-align: right; margin-top: 20px; }
+              .convenio-badge { background: #bfdbfe; padding: 8px 16px; border-radius: 8px; display: inline-block; font-weight: bold; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <div style="display: flex; align-items: center; font-size: 20px; font-weight: bold;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style="margin-right: 8px;">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12,6 12,12 16,14"/>
+                  </svg>
+                  ${dadosSalaAtual.termino || ""}
+                </div>
+                <div class="title">CIRURGIA SEGURA</div>
+                <div style="background: black; color: white; padding: 8px 16px; border-radius: 20px; font-size: 18px;">
+                  ${dadosSalaAtual.inicio || ""}
+                </div>
+              </div>
+              
+              <div class="patient-name">
+                ${dadosSalaAtual.paciente || ""} 
+                <span style="font-size: 20px; font-weight: normal;">${dadosSalaAtual.idade || ""}</span>
+              </div>
+              
+              <div class="procedure">
+                ${dadosSalaAtual.procedimento || ""}${dadosSalaAtual.lateralidade !== "N/A" ? ` - ${dadosSalaAtual.lateralidade}` : ""}
+                <span class="procedure-badge">E</span>
+              </div>
+              
+              <div class="team-info">
+                <div><strong>Cirurgião:</strong> ${dadosSalaAtual.cirurgiao || ""}</div>
+                <div><strong>Auxiliar:</strong> ${dadosSalaAtual.auxiliar || ""}</div>
+                <div><strong>Anestesista:</strong> ${dadosSalaAtual.anestesista || ""}</div>
+                <div><strong>Circulante:</strong> ${dadosSalaAtual.circulante || ""}</div>
+              </div>
+              
+              <div class="safety-grid">
+                <div class="safety-item" style="background: ${dadosSalaAtual.alergia ? "#fecaca" : "#bbf7d0"};">
+                  <div style="color: #dc2626; font-weight: bold; margin-bottom: 10px;">ALERGIA</div>
+                  <div class="safety-icon" style="background: ${dadosSalaAtual.alergia ? "#dc2626" : "#16a34a"}; color: white; margin: 0 auto;">
+                    ${dadosSalaAtual.alergia ? "✓" : "✕"}
+                  </div>
+                  <div style="font-weight: bold; margin-top: 8px;">${dadosSalaAtual.alergia || "NENHUMA"}</div>
+                </div>
+                
+                <div class="safety-item" style="background: ${dadosSalaAtual.jejum === "ADEQUADO" ? "#bfdbfe" : "#fecaca"};">
+                  <div style="color: #2563eb; font-weight: bold; margin-bottom: 10px;">JEJUM</div>
+                  <div class="safety-icon" style="background: ${dadosSalaAtual.jejum === "ADEQUADO" ? "#2563eb" : "#dc2626"}; color: white; margin: 0 auto;">
+                    ✓
+                  </div>
+                  <div style="font-weight: bold; margin-top: 8px;">${dadosSalaAtual.jejum || ""}</div>
+                </div>
+                
+                <div class="safety-item" style="background: ${dadosSalaAtual.materiais === "COMPLETOS" ? "#bbf7d0" : "#fecaca"};">
+                  <div style="color: #16a34a; font-weight: bold; margin-bottom: 10px;">MATERIAIS</div>
+                  <div class="safety-icon" style="background: ${dadosSalaAtual.materiais === "COMPLETOS" ? "#16a34a" : "#dc2626"}; color: white; margin: 0 auto;">
+                    ✓
+                  </div>
+                  <div style="font-weight: bold; margin-top: 8px;">${dadosSalaAtual.materiais || ""}</div>
+                </div>
+              </div>
+              
+              ${
+                dadosSalaAtual.timeline
+                  ? `
+                <div class="timeline-container">
+                  <div class="timeline-times">
+                    ${dadosSalaAtual.timeline.map((item) => `<div>${item.hora}</div>`).join("")}
+                  </div>
+                  <div class="timeline-bar">
+                    ${dadosSalaAtual.timeline
+                      .map((item, index, arr) => {
+                        const percentagem = (index / (arr.length - 1)) * 100
+                        const cor = item.concluido
+                          ? "#16a34a"
+                          : index === arr.findIndex((i) => !i.concluido)
+                            ? "#84cc16"
+                            : "#fb923c"
+                        return `<div class="timeline-point" style="left: ${percentagem}%; background: ${cor}; color: white;">${item.concluido ? "✓" : ""}</div>`
+                      })
+                      .join("")}
+                  </div>
+                  <div class="timeline-labels">
+                    ${dadosSalaAtual.timeline.map((item) => `<div>${item.status}</div>`).join("")}
+                  </div>
+                </div>
+              `
+                  : ""
+              }
+              
+              <div class="convenio-box">
+                <div class="convenio-badge">
+                  Convênio: ${dadosSalaAtual.convenio || ""}
+                </div>
+              </div>
+            </div>
+          </body>
+        </html>
+      `)
+      novaJanela.document.close()
+    }
+  }
 
   return (
     <div className="w-full h-full flex justify-center items-center p-3">
@@ -434,7 +568,7 @@ export default function PorSala() {
                             dadosSalaAtual?.materiais === "COMPLETOS" ? "bg-green-500" : "bg-red-500"
                           } text-white rounded-md p-2 mb-2`}
                         >
-                          <Check className="h-6 w-6" />
+                          <Check className="h-4 w-4" />
                         </div>
                         <span className="font-bold">{dadosSalaAtual?.materiais}</span>
                       </div>
@@ -485,6 +619,15 @@ export default function PorSala() {
                   <div className="bg-blue-200 px-4 py-1 rounded-md">
                     <span className="font-medium">Convênio: {dadosSalaAtual?.convenio}</span>
                   </div>
+                </div>
+                <div className="flex justify-center mt-6">
+                  <Button
+                    onClick={handleEspelharTela}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 flex items-center gap-2"
+                  >
+                    <Share2 className="h-4 w-4" />
+                    Espelhar Tela
+                  </Button>
                 </div>
               </div>
             ) : (

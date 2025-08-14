@@ -174,7 +174,7 @@ export default function MapaDoDia() {
 
   // Função para fazer logout
   const handleLogout = () => {
-    router.push("/login")
+    router.push("/home")
   }
 
   const toggleRowExpansion = (index: number) => {

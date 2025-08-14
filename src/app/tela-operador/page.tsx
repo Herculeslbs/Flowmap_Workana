@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
+import GlobalHeader from "@/app/global-header/page"
 
 export default function TelaOperador() {
   const router = useRouter()
@@ -29,7 +30,7 @@ export default function TelaOperador() {
 
   // Função para navegar para a tela de gerenciamento de mapeamento cirúrgico
   const irParaGerenciamentoMapa = () => {
-    router.push("/mapa-cirurgico")
+    router.push("/gerenciar-mapa")
   }
 
   // Função para navegar para a tela de gerenciamento de equipes
@@ -45,20 +46,13 @@ export default function TelaOperador() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Cabeçalho */}
-      <header className="w-full bg-[#1E40AF] py-3 px-4 flex justify-between items-center text-white shadow-md">
-        <h1 className="text-lg md:text-xl font-medium">Acesso de operador</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm md:text-base">Enfermeiro(a) Luciano</span>
-          <Button variant="ghost" size="sm" onClick={irParaMapaDoDia} className="text-white hover:bg-blue-700">
-            <Map className="h-4 w-4 mr-1" />
-            <span className="hidden sm:inline">Mapa do Dia</span>
-          </Button>
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-white hover:bg-blue-700">
-            <LogOut className="h-4 w-4 mr-1" />
-            <span className="hidden sm:inline">Sair</span>
-          </Button>
-        </div>
-      </header>
+      <GlobalHeader
+              title="Acesso de Operador"
+              showMapButton={true}
+              onMapClick={irParaMapaDoDia}
+              mapButtonText="Mapa do Dia"
+              mapButtonIcon={<Map className="h-4 w-4 mr-1" />}
+            />
 
       {/* Conteúdo principal */}
       <main className="flex-1 p-6 md:p-10 flex flex-col justify-center">
