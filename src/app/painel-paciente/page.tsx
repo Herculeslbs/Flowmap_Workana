@@ -366,7 +366,9 @@ export default function PainelPaciente() {
   const pacienteId = searchParams.get("id")
   const { toast } = useToast()
 
-  const [paciente, setPaciente] = useState<PacienteCompleto>(pacientesData["id"] || pacientesData["1"])
+  const [paciente, setPaciente] = useState<PacienteCompleto>(
+  pacienteId ? pacientesData[pacienteId] : pacientesData["1"]
+)
 
   // Estados para edição
   const [editingField, setEditingField] = useState<string | null>(null)
